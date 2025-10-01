@@ -1,0 +1,23 @@
+<mat-toolbar color="primary" class="mat-elevation-z4">
+  <div class="toolbar-content">
+    <a class="brand" routerLink="/">
+      <img src="/favicon.ico" alt="logo" class="logo" />
+      <span class="title">{{ appTitle() }}</span>
+    </a>
+
+    <span class="spacer"></span>
+
+    <nav class="nav">
+      <a mat-button routerLink="/">Home</a>
+      <a mat-button routerLink="/about">About</a>
+    </nav>
+
+    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Open menu" class="mobile-only">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item routerLink="/">Home</button>
+      <button mat-menu-item routerLink="/about">About</button>
+    </mat-menu>
+  </div>
+</mat-toolbar>
