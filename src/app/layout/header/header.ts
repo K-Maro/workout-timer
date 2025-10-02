@@ -13,5 +13,5 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./header.scss']
 })
 export class Header {
-  protected readonly appTitle = signal('Muay Thai Trainer');
+  protected readonly appTitle = signal('Workout Timer');
 }
