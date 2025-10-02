@@ -68,6 +68,33 @@ export class Home implements OnDestroy {
     if (this._rounds() > 1) this._rounds.set(this._rounds() - 1);
   }
 
+  private tickAudio = new Audio('/sounds/countdown.mp3');
+  private bellAudio = new Audio('/sounds/bell.mp3');
+
+  constructor() {
+    this.tickAudio.preload = 'auto';
+    this.bellAudio.preload = 'auto';
+  }
+
+  private playTick() {
+    try {
+      this.tickAudio.pause();
+      this.tickAudio.currentTime = 0;
+      void this.tickAudio.play();
+    } catch {}
+  }
+
+  private playBell() {
+    try {
+      this.tickAudio.pause();
+      this.tickAudio.currentTime = 0;
+
+      this.bellAudio.pause();
+      this.bellAudio.currentTime = 0;
+      void this.bellAudio.play();
+    } catch {}
+  }
+
   startWorkout() {
     if (this.countdown() !== null || this.currentPhase() !== 'idle') return;
 
@@ -77,18 +104,23 @@ export class Home implements OnDestroy {
 
     let v = 3;
     this.countdown.set(v);
+    this.playTick();
 
     this.countdownId = setInterval(() => {
       v -= 1;
       this.countdown.set(v);
 
-      if (v < 0) {
-        clearInterval(this.countdownId);
+      if (v >= 1) {
+        this.playTick();
+      } else if (v === 0) {
+        const HOLD_MS = 300;
+        clearInterval(this.countdownId!);
         this.countdownId = null;
-        this.countdown.set(null);
-
-        this.currentRound.set(1);
-        this.startPhase('round', this._roundLength());
+        setTimeout(() => {
+          this.countdown.set(null);
+          this.currentRound.set(1);
+          this.startPhase('round', this._roundLength());
+        }, HOLD_MS);
       }
     }, 1000);
   }
@@ -97,6 +129,11 @@ export class Home implements OnDestroy {
     this.currentPhase.set(phase);
     this.timeLeft.set(duration);
     this.isPaused.set(false);
+
+    if (phase === 'round') {
+      this.playBell();
+    }
+
     this.runTick();
   }
 
@@ -108,11 +145,17 @@ export class Home implements OnDestroy {
       const t = this.timeLeft() - 1;
       this.timeLeft.set(t);
 
+      if (t > 0 && t <= 3) {
+        this.playTick();
+      }
+
       if (t <= 0) {
         this.stopTimer();
 
         const phase = this.currentPhase();
         if (phase === 'round') {
+          this.playBell();
+
           if (this.currentRound() === this._rounds()) {
             this.currentPhase.set('done');
           } else {
