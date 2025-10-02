@@ -1,4 +1,106 @@
-<div class="container">
-    <p>home works!</p>
+<mat-card class="timer-card">
+  <mat-card-title class="card-title">Workout Settings</mat-card-title>
+
+  <div class="session-summary">
+    <span class="label">Total session time:</span>
+    <strong>{{ displayTotalTime }}</strong>
+  </div>
+
+  <mat-card-content>
+    <div class="container">
+
+      <div class="timer">
+        <div class="timer-label">
+          <mat-icon>sports_martial_arts</mat-icon>
+          <h2>Round Length</h2>
+        </div>
+        <div class="time-control">
+          <button mat-icon-button color="primary" (click)="decrementRoundLength()">
+            <mat-icon>remove</mat-icon>
+          </button>
+          <div class="time-display">{{ displayRoundLength }}</div>
+          <button mat-icon-button color="primary" (click)="incrementRoundLength()">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="timer">
+        <div class="timer-label">
+          <mat-icon>snooze</mat-icon>
+          <h2>Rest time</h2>
+        </div>
+        <div class="time-control">
+          <button mat-icon-button color="primary" (click)="decrementRestLength()">
+            <mat-icon>remove</mat-icon>
+          </button>
+          <div class="time-display">{{ displayRestLength }}</div>
+          <button mat-icon-button color="primary" (click)="incrementRestLength()">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="timer">
+        <div class="timer-label">
+          <mat-icon>timelapse</mat-icon>
+          <h2>Rounds</h2>
+        </div>
+        <div class="time-control">
+          <button mat-icon-button color="primary" (click)="decrementRounds()">
+            <mat-icon>remove</mat-icon>
+          </button>
+          <div class="time-display">{{ displayRounds }}</div>
+          <button mat-icon-button color="primary" (click)="incrementRounds()">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions class="card-actions">
+    <button mat-fab extended (click)="startWorkout()">
+      <mat-icon>play_arrow</mat-icon>
+      Start Workout
+    </button>
+  </mat-card-actions>
+</mat-card>
+
+<div class="backdrop" *ngIf="countdown() !== null">
+  <div class="countdown">
+    <ng-container *ngIf="countdown()! > 0; else startTpl">
+      {{ countdown() }}
+    </ng-container>
+    <ng-template #startTpl>Start!</ng-template>
+  </div>
 </div>
 
+<div *ngIf="currentPhase() !== 'idle' && countdown() === null" class="session-overlay">
+  <div class="session-actions" *ngIf="currentPhase() !== 'done'">
+    <button mat-fab mini (click)="togglePause()" class="action-btn" aria-label="Pause or resume">
+      <mat-icon>{{ isPaused() ? 'play_arrow' : 'pause' }}</mat-icon>
+    </button>
+    <button mat-fab mini color="warn" (click)="endWorkout()" class="action-btn" aria-label="End workout">
+      <mat-icon>stop</mat-icon>
+    </button>
+  </div>
+
+  <div *ngIf="currentPhase() === 'round'">
+    <h2>Round {{ currentRound() }} / {{ displayRounds }}</h2>
+    <div class="big-timer">{{ displayTimeLeft }}</div>
+  </div>
+
+  <div *ngIf="currentPhase() === 'rest'">
+    <h2>Rest</h2>
+    <div class="big-timer">{{ displayTimeLeft }}</div>
+  </div>
+
+  <div *ngIf="currentPhase() === 'done'">
+    <h2>Workout Complete 🎉</h2>
+    <div class="done-actions">
+      <button mat-raised-button color="primary" (click)="closeAfterDone()">Close</button>
+    </div>
+  </div>
+</div>
