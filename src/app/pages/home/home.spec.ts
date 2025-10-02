@@ -12,6 +12,11 @@ describe('Home', () => {
   let component: Home;
   let fixture: ComponentFixture<Home>;
 
+  beforeAll(() => {
+    spyOn(window.HTMLMediaElement.prototype, 'play').and.returnValue(Promise.resolve());
+    spyOn(window.HTMLMediaElement.prototype, 'pause').and.callFake(function () {});
+  });
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Home],
@@ -55,7 +60,7 @@ describe('Home', () => {
   describe('increment/decrement rules', () => {
     it('should enforce round length bounds (0..30min) step 5s', () => {
       for (let i = 0; i < 120 / 5 + 1; i++) component.decrementRoundLength();
-      expect(component.displayRoundLength).toBe('00:00');
+      expect(component.displayRoundLength).toBe('00:10');
 
       for (let i = 0; i < (30 * 60) / 5 + 5; i++) component.incrementRoundLength();
       expect(component.displayRoundLength).toBe('30:00');
@@ -63,7 +68,7 @@ describe('Home', () => {
 
     it('should enforce rest length bounds (0..10min) step 5s', () => {
       for (let i = 0; i < 60 / 5 + 1; i++) component.decrementRestLength();
-      expect(component.displayRestLength).toBe('00:00');
+      expect(component.displayRestLength).toBe('00:10');
 
       for (let i = 0; i < (10 * 60) / 5 + 5; i++) component.incrementRestLength();
       expect(component.displayRestLength).toBe('10:00');

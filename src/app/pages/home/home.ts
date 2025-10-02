@@ -14,6 +14,15 @@ type Phase = 'idle' | 'round' | 'rest' | 'done';
   styleUrl: './home.scss',
 })
 export class Home implements OnDestroy {
+  public static readonly MAX_ROUND_DURATION_SECONDS = 30 * 60;
+  public static readonly MAX_REST_DURATION_SECONDS  = 10 * 60;
+  public static readonly TIME_ADJUST_STEP_SECONDS   = 5;
+  public static readonly MIN_DURATION_SECONDS       = 10;
+  public static readonly INITIAL_COUNTDOWN_SECONDS  = 3;
+  public static readonly START_SCREEN_HOLD_MS       = 300;
+  public static readonly TIMER_INTERVAL_MS          = 1000;
+  public static readonly FINAL_COUNTDOWN_WINDOW     = 3;
+
   private _roundLength = signal(120);
   private _restLength = signal(60);
   private _rounds = signal(3);
@@ -25,7 +34,6 @@ export class Home implements OnDestroy {
 
   countdown = signal<number | null>(null);
   private countdownId: any = null;
-
   private intervalId: any = null;
 
   get displayRoundLength(): string {
@@ -42,24 +50,32 @@ export class Home implements OnDestroy {
   }
 
   totalTime = computed(() => {
-    const r = this._rounds();
-    return r > 0 ? r * this._roundLength() + (r - 1) * this._restLength() : 0;
+    const rounds = this._rounds();
+    return rounds > 0 ? rounds * this._roundLength() + (rounds - 1) * this._restLength() : 0;
   });
   get displayTotalTime(): string {
     return this.formatSeconds(this.totalTime());
   }
 
   incrementRoundLength() {
-    if (this._roundLength() < 30 * 60) this._roundLength.set(this._roundLength() + 5);
+    if (this._roundLength() < Home.MAX_ROUND_DURATION_SECONDS) {
+      this._roundLength.set(this._roundLength() + Home.TIME_ADJUST_STEP_SECONDS);
+    }
   }
   decrementRoundLength() {
-    if (this._roundLength() > 10) this._roundLength.set(this._roundLength() - 5);
+    if (this._roundLength() > Home.MIN_DURATION_SECONDS) {
+      this._roundLength.set(this._roundLength() - Home.TIME_ADJUST_STEP_SECONDS);
+    }
   }
   incrementRestLength() {
-    if (this._restLength() < 10 * 60) this._restLength.set(this._restLength() + 5);
+    if (this._restLength() < Home.MAX_REST_DURATION_SECONDS) {
+      this._restLength.set(this._restLength() + Home.TIME_ADJUST_STEP_SECONDS);
+    }
   }
   decrementRestLength() {
-    if (this._restLength() > 10) this._restLength.set(this._restLength() - 5);
+    if (this._restLength() > Home.MIN_DURATION_SECONDS) {
+      this._restLength.set(this._restLength() - Home.TIME_ADJUST_STEP_SECONDS);
+    }
   }
   incrementRounds() {
     this._rounds.set(this._rounds() + 1);
@@ -102,27 +118,26 @@ export class Home implements OnDestroy {
     this.isPaused.set(false);
     this.currentPhase.set('idle');
 
-    let v = 3;
-    this.countdown.set(v);
+    let countdownValue = Home.INITIAL_COUNTDOWN_SECONDS;
+    this.countdown.set(countdownValue);
     this.playTick();
 
     this.countdownId = setInterval(() => {
-      v -= 1;
-      this.countdown.set(v);
+      countdownValue -= 1;
+      this.countdown.set(countdownValue);
 
-      if (v >= 1) {
+      if (countdownValue >= 1) {
         this.playTick();
-      } else if (v === 0) {
-        const HOLD_MS = 300;
+      } else if (countdownValue === 0) {
         clearInterval(this.countdownId!);
         this.countdownId = null;
         setTimeout(() => {
           this.countdown.set(null);
           this.currentRound.set(1);
           this.startPhase('round', this._roundLength());
-        }, HOLD_MS);
+        }, Home.START_SCREEN_HOLD_MS);
       }
-    }, 1000);
+    }, Home.TIMER_INTERVAL_MS);
   }
 
   private startPhase(phase: Phase, duration: number) {
@@ -142,20 +157,19 @@ export class Home implements OnDestroy {
     this.intervalId = setInterval(() => {
       if (this.isPaused()) return;
 
-      const t = this.timeLeft() - 1;
-      this.timeLeft.set(t);
+      const remainingTime = this.timeLeft() - 1;
+      this.timeLeft.set(remainingTime);
 
-      if (t > 0 && t <= 3) {
+      if (remainingTime > 0 && remainingTime <= Home.FINAL_COUNTDOWN_WINDOW) {
         this.playTick();
       }
 
-      if (t <= 0) {
+      if (remainingTime <= 0) {
         this.stopTimer();
 
         const phase = this.currentPhase();
         if (phase === 'round') {
           this.playBell();
-
           if (this.currentRound() === this._rounds()) {
             this.currentPhase.set('done');
           } else {
@@ -166,7 +180,7 @@ export class Home implements OnDestroy {
           this.startPhase('round', this._roundLength());
         }
       }
-    }, 1000);
+    }, Home.TIMER_INTERVAL_MS);
   }
 
   togglePause() {
@@ -204,12 +218,12 @@ export class Home implements OnDestroy {
     }
   }
 
-  private formatSeconds(total: number): string {
-    const m = Math.floor(total / 60)
+  private formatSeconds(totalSeconds: number): string {
+    const minutes = Math.floor(totalSeconds / 60)
       .toString()
       .padStart(2, '0');
-    const s = (total % 60).toString().padStart(2, '0');
-    return `${m}:${s}`;
+    const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+    return `${minutes}:${seconds}`;
   }
 
   ngOnDestroy(): void {
