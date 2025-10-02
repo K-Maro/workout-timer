@@ -53,13 +53,13 @@ export class Home implements OnDestroy {
     if (this._roundLength() < 30 * 60) this._roundLength.set(this._roundLength() + 5);
   }
   decrementRoundLength() {
-    if (this._roundLength() > 0) this._roundLength.set(this._roundLength() - 5);
+    if (this._roundLength() > 10) this._roundLength.set(this._roundLength() - 5);
   }
   incrementRestLength() {
     if (this._restLength() < 10 * 60) this._restLength.set(this._restLength() + 5);
   }
   decrementRestLength() {
-    if (this._restLength() > 0) this._restLength.set(this._restLength() - 5);
+    if (this._restLength() > 10) this._restLength.set(this._restLength() - 5);
   }
   incrementRounds() {
     this._rounds.set(this._rounds() + 1);
