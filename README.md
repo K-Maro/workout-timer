@@ -1,59 +1,56 @@
-# MuayThaiTrainer
+Workout Timer ⏱️
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.3.
+Built with Angular 20, Angular Material
 
-## Development server
+🚀 Getting Started
+Prerequisites
 
-To start a local development server, run:
+Node.js
+ (LTS recommended)
 
-```bash
-ng serve
-```
+Angular CLI
+ (v20+)
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Installation
 
-## Code scaffolding
+Clone the repository and install dependencies:
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+git clone https://github.com/K-Maro/workout-timer.git
+cd workout-timer
+npm install
 
-```bash
-ng generate component component-name
-```
+🖥 Development server
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Start a local dev server:
 
-```bash
-ng generate --help
-```
+npm start
 
-## Building
 
-To build the project run:
+Open your browser at http://localhost:4200
+.
+The app reloads automatically when you modify source files.
 
-```bash
-ng build
-```
+📦 Scripts
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Available in package.json:
 
-## Running unit tests
+npm start → Run dev server (ng serve)
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+npm run build → Build for production
 
-```bash
-ng test
-```
+npm run watch → Build in watch mode
 
-## Running end-to-end tests
+npm test → Run unit tests
 
-For end-to-end (e2e) testing, run:
+🧪 Testing
+Unit tests
 
-```bash
-ng e2e
-```
+Run all unit tests with Karma + Jasmine:
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+npm test
 
-## Additional Resources
+🏗 Building
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Create a production build:
+
+npm run build
