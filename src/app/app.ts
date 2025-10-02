@@ -8,6 +8,4 @@ import { Header } from './layout/header';
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
-  protected readonly title = signal('muay-thai-trainer');
-}
+export class App {}
