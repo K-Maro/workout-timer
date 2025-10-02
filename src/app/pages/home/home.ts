@@ -15,13 +15,13 @@ type Phase = 'idle' | 'round' | 'rest' | 'done';
 })
 export class Home implements OnDestroy {
   public static readonly MAX_ROUND_DURATION_SECONDS = 30 * 60;
-  public static readonly MAX_REST_DURATION_SECONDS  = 10 * 60;
-  public static readonly TIME_ADJUST_STEP_SECONDS   = 5;
-  public static readonly MIN_DURATION_SECONDS       = 10;
-  public static readonly INITIAL_COUNTDOWN_SECONDS  = 3;
+  public static readonly MAX_REST_DURATION_SECONDS = 10 * 60;
+  public static readonly TIME_ADJUST_STEP_SECONDS = 5;
+  public static readonly MIN_DURATION_SECONDS = 10;
+  public static readonly INITIAL_COUNTDOWN_SECONDS = 3;
   public static readonly START_SCREEN_HOLD_MS = 1000;
-  public static readonly TIMER_INTERVAL_MS          = 1000;
-  public static readonly FINAL_COUNTDOWN_WINDOW     = 3;
+  public static readonly TIMER_INTERVAL_MS = 1000;
+  public static readonly FINAL_COUNTDOWN_WINDOW = 3;
 
   private _roundLength = signal(120);
   private _restLength = signal(60);
